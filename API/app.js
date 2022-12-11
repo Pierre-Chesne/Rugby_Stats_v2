@@ -2,19 +2,24 @@ const express = require("express");
 const app = express();
 const cors = require('cors');
 const indexRouter = require("./routes/index");
-const pg = require("pg");
+const { Client } = require('pg');
+require('dotenv').config();
 
-
-const client = new pg.Client({
-    user: 'admin',
-    host: '127.0.0.1',
-    database: 'test',
-    password: passwd,
-    port: 12345
-});
-client.connect()
-
-
+const client = new Client({
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+  });
+  
+  client.connect((err) => {
+    if (err) {
+      console.error('Error connecting to the database:', err.stack);
+    } else {
+      console.log('Connected to the database.');
+    }
+  });
 
 app.use("/", indexRouter);
 app.use(cors());
