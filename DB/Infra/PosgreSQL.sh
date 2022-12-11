@@ -35,6 +35,12 @@ az postgres flexible-server firewall-rule create \
   --start-ip-address 0.0.0.0 \
   --end-ip-address 255.255.255.255
 
+# Allow non-SSL connections
+az postgres flexible-server parameter set \
+  --resource-group $RESOURCE_GROUP \
+  --server-name $POSTGRESQL_NAME \
+  --name require_secure_transport --value off
+
 # Create Database
 az postgres flexible-server db create \
   --resource-group $RESOURCE_GROUP \
