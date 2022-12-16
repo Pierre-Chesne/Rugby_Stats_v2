@@ -3,7 +3,7 @@ name: Deploy Infrastructure
 on: workflow_dispatch
 
 env:
-  RESOURCE_GROUP: "RG_Rugby_Stats_V2"
+  RESOURCE_GROUP: "RG_Rugby_Stats_v2"
   LOCATION: "westeurope"
   POSTGRESQL_NAME: "rugbystatsv2"
   POSTGRESQL_ADMINUSER: "adminDB"
@@ -13,9 +13,12 @@ env:
   POSTGRESQL_VERSION: "14"
   POSTGRESQL_STORAGESIZE: "32"
   POSTGRESQL_DBNAME: "rugby_api"
+  ACR_NAME: "rugbystatv2acr"
+  ACR_SKU: "Basic"
+
 
 jobs:
-  deploy_infra:
+  deploy_infra_rg:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 
@@ -30,12 +33,30 @@ jobs:
         run: |
           az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Deploy Infrastructure
+      - name: Deploy Resource Group
         run: |
           az group create \
             --name ${{ env.RESOURCE_GROUP }} \
             --location ${{ env.LOCATION }}
 
+  deploy_infra_pg:
+    runs-on: ubuntu-latest
+    needs: deploy_infra_rg
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v2
+      
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set Subscription
+        run: |
+          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy Flexible Server PostgreSQL
+        run: |
           az postgres flexible-server create \
             --name ${{ env.POSTGRESQL_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
@@ -55,6 +76,7 @@ jobs:
             --start-ip-address 0.0.0.0 \
             --end-ip-address 255.255.255.255
 
+          az config set extension.use_dynamic_install=yes_without_prompt
           az postgres flexible-server parameter set \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --server-name ${{ env.POSTGRESQL_NAME }} \
@@ -71,6 +93,30 @@ jobs:
             --name ${{ env.POSTGRESQL_NAME }} \
             --database-name ${{ env.POSTGRESQL_DBNAME }} \
             --file-path ./DB/create_tables.sql
+
+  deploy_infra_acr:
+    runs-on: ubuntu-latest
+    needs: deploy_infra_rg
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v2
+      
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set Subscription
+        run: |
+          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy Infrastructure
+        run: |
+          az acr create \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --name ${{ env.ACR_NAME }} \
+            --sku ${{ env.ACR_SKU }} \
+            --admin-enabled true
 
 
 
