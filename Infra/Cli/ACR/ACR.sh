@@ -1,9 +1,9 @@
 #!/bin/bash
 
-RESOURCE_GROUP="RG_Rugby_Stats_V2"
-LOCATION="westeurope"
-ACR_NAME="acrrugbystatsv2"
-ACR_SKUNAME="Standard"
+RESOURCE_GROUP: "RG_Rugby_Stats_V2"
+LOCATION: "westeurope"
+ACR_NAME: "acrrugbystatsv2"
+ACR_SKUNAME: "Standard"
 
 # Create Azure Container Registry
 az acr create \
