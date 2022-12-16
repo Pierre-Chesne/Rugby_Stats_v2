@@ -39,7 +39,7 @@ jobs:
             --name ${{ env.RESOURCE_GROUP }} \
             --location ${{ env.LOCATION }}
 
-  deploy_infra_pg:
+  deploy_infra_postgreSQL:
     runs-on: ubuntu-latest
     needs: deploy_infra_rg
     steps:
