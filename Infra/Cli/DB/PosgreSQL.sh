@@ -1,3 +1,5 @@
+#!/bin/bash
+
 RESOURCE_GROUP="RG_Rugby_Stats_V2"
 LOCATION="westeurope"
 POSTGRESQL_NAME="rugbystatsv2"

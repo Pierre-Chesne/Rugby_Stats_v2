@@ -1,30 +1,32 @@
 const express = require("express");
 const app = express();
 const cors = require('cors');
-const indexRouter = require("./routes/index");
-const { Client } = require('pg');
-require('dotenv').config();
+const client = require('./Config/db')
+const morgan = require('morgan');
 
-const client = new Client({
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
-  });
-  
-  client.connect((err) => {
-    if (err) {
-      console.error('Error connecting to the database:', err.stack);
-    } else {
-      console.log('Connected to the database.');
-    }
-  });
+// Connexion DB
+client.connect((err) => {
+  if (err) {
+    console.error('Error connecting to the database:', err.stack);
+  } else {
+    console.log('Connected to the database.');
+  }
+});
 
-app.use("/", indexRouter);
+// Express
 app.use(cors());
 app.use(express.json());
+app.use(morgan('combined'));
 
+// Route Index
+const indexRouter = require("./routes/index");
+app.use("/", indexRouter);
+
+// Route Plaquages OK
+const indexPlaquageOK = require("./routes/plaquage-ok");
+app.use("/", indexPlaquageOK);
+
+// app sur le port 3000
 app.listen(3000, () => {
-    console.log('app listening on port 3000!');
+  console.log('app listening on port 3000!');
 });
