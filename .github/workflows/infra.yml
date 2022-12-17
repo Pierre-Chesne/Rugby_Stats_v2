@@ -5,14 +5,14 @@ on: workflow_dispatch
 env:
   RESOURCE_GROUP: "RG_Rugby_Stats_v2"
   LOCATION: "westeurope"
-  POSTGRESQL_NAME: "rugbystatsv2"
-  POSTGRESQL_ADMINUSER: "adminDB"
-  POSTGRESQL_ADMINPASSWORD: "Password123$"
+  #POSTGRESQL_NAME: "rugbystatsv2"
+  #POSTGRESQL_ADMINUSER: "adminDB"
+  #POSTGRESQL_ADMINPASSWORD: "Password123$"
   POSTGRESQL_SKUNAME: "Standard_B1ms"
   POSTGRESQL_TIER: "Burstable"
   POSTGRESQL_VERSION: "14"
   POSTGRESQL_STORAGESIZE: "32"
-  POSTGRESQL_DBNAME: "rugby_api"
+  #POSTGRESQL_DBNAME: "rugby_api"
   ACR_NAME: "rugbystatv2acr"
   ACR_SKU: "Basic"
 
@@ -58,11 +58,11 @@ jobs:
       - name: Deploy Flexible Server PostgreSQL
         run: |
           az postgres flexible-server create \
-            --name ${{ env.POSTGRESQL_NAME }} \
+            --name ${{ secrets.POSTGRESQL_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --location ${{ env.LOCATION }} \
-            --admin-user ${{ env.POSTGRESQL_ADMINUSER }} \
-            --admin-password ${{ env.POSTGRESQL_ADMINPASSWORD }} \
+            --admin-user ${{ secrets.POSTGRESQL_ADMINUSER }} \
+            --admin-password ${{ secrets.POSTGRESQL_ADMINPASSWORD }} \
             --sku-name ${{ env.POSTGRESQL_SKUNAME }} \
             --tier ${{ env.POSTGRESQL_TIER }} \
             --version ${{ env.POSTGRESQL_VERSION }} \
@@ -70,7 +70,7 @@ jobs:
             --public-access 0.0.0.0 --yes
 
           az postgres flexible-server firewall-rule create \
-            --name ${{ env.POSTGRESQL_NAME }} \
+            --name ${{ secrets.POSTGRESQL_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --rule-name allowall \
             --start-ip-address 0.0.0.0 \
@@ -79,19 +79,19 @@ jobs:
           az config set extension.use_dynamic_install=yes_without_prompt
           az postgres flexible-server parameter set \
             --resource-group ${{ env.RESOURCE_GROUP }} \
-            --server-name ${{ env.POSTGRESQL_NAME }} \
+            --server-name ${{ secrets.POSTGRESQL_NAME }} \
             --name require_secure_transport --value off
 
           az postgres flexible-server db create \
             --resource-group ${{ env.RESOURCE_GROUP }} \
-            --server-name ${{ env.POSTGRESQL_NAME }} \
-            --database-name ${{ env.POSTGRESQL_DBNAME }}
+            --server-name ${{ secrets.POSTGRESQL_NAME }} \
+            --database-name ${{ secrets.POSTGRESQL_DBNAME }}
           
           az postgres flexible-server execute \
-            --admin-password ${{ env.POSTGRESQL_ADMINPASSWORD }} \
-            --admin-user ${{ env.POSTGRESQL_ADMINUSER }} \
-            --name ${{ env.POSTGRESQL_NAME }} \
-            --database-name ${{ env.POSTGRESQL_DBNAME }} \
+            --admin-password ${{ secrets.POSTGRESQL_ADMINPASSWORD }} \
+            --admin-user ${{ secrets.POSTGRESQL_ADMINUSER }} \
+            --name ${{ secrets.POSTGRESQL_NAME }} \
+            --database-name ${{ secrets.POSTGRESQL_DBNAME }} \
             --file-path ./DB/create_tables.sql
 
   deploy_infra_acr:
