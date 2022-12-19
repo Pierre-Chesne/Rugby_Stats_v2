@@ -1,11 +1,14 @@
 # Build API nodejs app
-name: Build API
+name: Scan CodeQL
 
-on: workflow_dispatch
+on: 
+    workflow_dispatch:
+    schedule:
+      - cron: '0 0 * * 7'
 
 jobs:
-  Analyse_code_api:
-    name: Analyse code API
+  Analyse_code_static:
+    name: Analyse code static
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -34,7 +37,4 @@ jobs:
         uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8
         with:
           name: Results CodeQL
-          path: /home/runner/work/Demorama_Applications/results/javascript.sarif      
-      
-
-
+          path: /home/runner/work/Demorama_Applications/results/javascript.sarif
