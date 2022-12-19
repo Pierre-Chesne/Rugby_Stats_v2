@@ -1,0 +1,40 @@
+# Build API nodejs app
+name: Build API
+
+on: workflow_dispatch
+
+jobs:
+  Analyse_code_api:
+    name: Analyse code API
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript' ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@904260d7d935dff982205cbdb42025ce30b7a34f
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@904260d7d935dff982205cbdb42025ce30b7a34f
+        with:
+          category: "/language:${{matrix.language}}"
+
+      - name: Upload Rapport CodeQL (Artifact)
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8
+        with:
+          name: Results CodeQL
+          path: /home/runner/work/Demorama_Applications/results/javascript.sarif      
+      
+
+
