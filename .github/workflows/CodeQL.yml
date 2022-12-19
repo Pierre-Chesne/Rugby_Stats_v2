@@ -1,4 +1,3 @@
-# Build API nodejs app
 name: Scan CodeQL
 
 on: 
