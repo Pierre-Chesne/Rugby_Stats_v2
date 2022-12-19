@@ -3,7 +3,7 @@ name: Scan CodeQL
 on: 
     workflow_dispatch:
     schedule:
-      - cron: '1 0 * * 7'
+      - cron: '14 15 * * 6'
 
 jobs:
   Analyse_code_static:
