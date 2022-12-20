@@ -44,17 +44,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Build de l'image de l'application
-        run: |
-          cd API && docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.IMAGE_VERSION }}
-
-      - name: Scan Docker image
-        uses: azure/docker-scan@v1
+    # Run analyzers
+      - name: Run Microsoft Security DevOps Analysis
+        uses: microsoft/security-devops-action@preview
+        id: msdo
+  
+      # Upload alerts to the Security tab
+      - name: Upload alerts to Security tab
+        uses: github/codeql-action/upload-sarif@v1
         with:
-          image: ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.IMAGE_VERSION }}
-
-      - name: Upload Rapport Docker Scan (Artifact)
-        uses: actions/upload-artifact@v3
-        with:
-          name: Results Docker Scan
-          path: /home/runner/work/Demorama_Applications/results/docker-scan-results.json
+          sarif_file: ${{ steps.msdo.outputs.sarifFile }}
