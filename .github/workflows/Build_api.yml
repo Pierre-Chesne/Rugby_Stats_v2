@@ -28,4 +28,4 @@ jobs:
       
       - name: npm test  
         run: |
-          cd API npm test
+          cd API && npm test
