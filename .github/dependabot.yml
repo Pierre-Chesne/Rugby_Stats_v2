@@ -14,3 +14,19 @@ updates:
       prefix: fix
       prefix-development: chore
       include: scope
+      
+      
+  - package-ecosystem: "github-actions"
+    target-branch: "main"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+    reviewers:
+      - pierre-chesne
+    assignees:
+      - pierre-chesne
+    commit-message:
+      prefix: fix
+      prefix-development: chore
+      include: scope
