@@ -131,6 +131,15 @@ jobs:
         run: |
           az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Installation extension containerapp
+        run: |
+          az extension add --name containerapp
+          az extension add --name containerapp --upgrade
+          az extension list -o table 
+          az provider register --namespace Microsoft.App
+          az provider register --namespace Microsoft.OperationalInsights
+          az config set extension.use_dynamic_install=yes_without_prompt
+
       - name: Deploy Environment
         run: |
           az monitor log-analytics workspace create \
