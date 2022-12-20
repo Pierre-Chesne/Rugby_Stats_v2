@@ -4,8 +4,8 @@ on:
     workflow_dispatch:
 
 jobs:
-  Build_API:
-    name: Build API
+  Test_Unitaires:
+    name: Test Unitaires
     runs-on: ubuntu-latest
 
     strategy:
@@ -20,6 +20,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run build --if-present
-      - run: npm test
+      
+      - name: Install dependencies
+        run: |
+          cd API && npm ci
+      
+      - name: Build
+        run: |
+          cd API && npm run build --if-present
+      
+      - name: Test  
+        run: |
+          cd API npm test
