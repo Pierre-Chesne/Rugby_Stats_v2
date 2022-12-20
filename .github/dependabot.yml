@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    target-branch: "main"
+    directory: "/API"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+    reviewers:
+      - pierre-chesne
+    assignees:
+      - pierre-chesne
+    commit-message:
+      prefix: fix
+      prefix-development: chore
+      include: scope
