@@ -1,7 +1,12 @@
 name: Build API
 
 on: 
-    workflow_dispatch:
+  workflow_dispatch:
+
+env:
+  REGISTRY_NAME: rugbystatv2acr
+  APP_NAME: rugbystats-api
+  IMAGE_VERSION: 1.0.0
 
 jobs:
   Test_Unitaires:
@@ -29,3 +34,27 @@ jobs:
       - name: npm test  
         run: |
           cd API && npm test
+
+  Scan_Image_Docker:
+    name: Scan Image Docker
+    runs-on: ubuntu-latest
+    needs: Test_Unitaires
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build de l'image de l'application
+        run: |
+          cd API && docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.IMAGE_VERSION }}
+
+      - name: Scan Docker image
+        uses: azure/docker-scan@v1
+        with:
+          image: ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.IMAGE_VERSION }}
+
+      - name: Upload Rapport Docker Scan (Artifact)
+        uses: actions/upload-artifact@v3
+        with:
+          name: Results Docker Scan
+          path: /home/runner/work/Demorama_Applications/results/docker-scan-results.json
