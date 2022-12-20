@@ -11,6 +11,8 @@ env:
   POSTGRESQL_STORAGESIZE: "32"
   ACR_NAME: "rugbystatv2acr"
   ACR_SKU: "Basic"
+  LOG_ANALYTICS_NAME: "RugbyStaLa-env"
+  CONTAINERAPPS_ENVIRONMENT_NAME: "RugbyStats-env"
 
 jobs:
   deploy_infra_rg:
@@ -112,3 +114,35 @@ jobs:
             --name ${{ env.ACR_NAME }} \
             --sku ${{ env.ACR_SKU }} \
             --admin-enabled true
+
+  deploy_infra_environment:
+    runs-on: ubuntu-latest
+    needs: deploy_infra_rg
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v2
+      
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set Subscription
+        run: |
+          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy Environment
+        run: |
+          az monitor log-analytics workspace create \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --workspace-name ${{ env.LOG_ANALYTICS_NAME }} \
+            --location ${{ env.LOCATION }}
+          LOG_ANALYTICS_WORKSPACE_CLIENT_ID=`az monitor log-analytics workspace show --query customerId -g ${{ env.RESOURCE_GROUP }} -n ${{ env.LOG_ANALYTICS_NAME }} --out tsv`
+          LOG_ANALYTICS_WORKSPACE_PRIMARY_KEY=`az monitor log-analytics workspace get-shared-keys --query primarySharedKey -g ${{ env.RESOURCE_GROUP }} -n ${{ env.LOG_ANALYTICS_NAME }} --out tsv`
+          az containerapp env create \
+            --name ${{ env.CONTAINERAPPS_ENVIRONMENT_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --location ${{ env.LOCATION }} \
+            --logs-workspace-id $LOG_ANALYTICS_WORKSPACE_CLIENT_ID \
+            --logs-workspace-key $LOG_ANALYTICS_WORKSPACE_PRIMARY_KEY
+
