@@ -37,7 +37,7 @@ jobs:
 
       - name: Deploy Azure Container Apps
         run: |
-          REGISTRY_PASSWORD=$(az acr credential show --name ${{ env.ACRNAME }} -o tsv --query "passwords[0].value")
+          REGISTRY_PASSWORD=$(az acr credential show --name ${{ env.ACR_NAME }} -o tsv --query "passwords[0].value")
           az containerapp create \
             --name ${{ env.APP_NAME_API }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
