@@ -1,4 +1,4 @@
-name: deployment ACA API
+name: Deploy ACA API
 on:
   workflow_dispatch:
 
