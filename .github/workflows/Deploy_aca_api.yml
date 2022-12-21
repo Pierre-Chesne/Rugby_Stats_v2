@@ -45,6 +45,7 @@ jobs:
             --image ${{ env.ACR_NAME }}.azurecr.io/${{ env.APP_NAME_API }}:${{ env.IMAGE_VERSION }} \
             --secrets secret-db-host=${{ secrets.POSTGRESQL_HOSTNAME }} secret-db-user=${{ secrets.POSTGRESQL_ADMINUSER }} secret-db-password=${{ secrets.POSTGRESQL_ADMINPASSWORD }} secret-db-database=${{ secrets.POSTGRESQL_DBNAME }} secret-db-port=${{ secrets.POSTGRESQL_PORT }} \
             --env-vars DB_HOST=secretref:secret-db-host DB_USER=secretref:secret-db-user DB_PASS=secretref:secret-db-password DB_NAME=secretref:secret-db-database DB_PORT=secretref:secret-db-port \
+            --registry-server ${{ env.ACR_NAME }}.azurecr.io \
             --registry-username ${{ env.ACR_NAME }} \
             --registry-password $REGISTRY_PASSWORD \
             --cpu "0.75" \
