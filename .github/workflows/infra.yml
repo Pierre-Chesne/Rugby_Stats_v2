@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       
       - name: Login to Azure
         uses: azure/login@v1
@@ -41,7 +41,7 @@ jobs:
     needs: deploy_infra_rg
     steps:
       - name: Checkout 
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       
       - name: Login to Azure
         uses: azure/login@v1
@@ -96,7 +96,7 @@ jobs:
     needs: deploy_infra_rg
     steps:
       - name: Checkout 
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       
       - name: Login to Azure
         uses: azure/login@v1
@@ -120,7 +120,7 @@ jobs:
     needs: deploy_infra_rg
     steps:
       - name: Checkout 
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       
       - name: Login to Azure
         uses: azure/login@v1
